@@ -10,6 +10,26 @@ bool sim_ready = true;
 
 unsigned long startTime = 0;
 
+float prev_lat = 0.0;
+float prev_lon = 0.0;
+float last_valid_speed = 0.0;
+unsigned long prev_time = 0;
+
+float calculateDistance(float lat1, float lon1, float lat2, float lon2) {
+  const float R = 6371000; // Radius bumi dalam meter
+  float dLat = radians(lat2 - lat1);
+  float dLon = radians(lon2 - lon1);
+  lat1 = radians(lat1);
+  lat2 = radians(lat2);
+
+  float a = sin(dLat / 2) * sin(dLat / 2) +
+            sin(dLon / 2) * sin(dLon / 2) * cos(lat1) * cos(lat2);
+  float c = 2 * atan2(sqrt(a), sqrt(1 - a));
+  float d = R * c;
+  return d; // dalam meter
+}
+
+
 String sendAT(String command, String expected = "")
 {
   SerialAT.print(command + "\r");
@@ -245,6 +265,38 @@ gpsReading getGPS()
 
   String data = gps.latitude + "," + gps.longitude;
   saveData(data, "gps.txt");
+
+
+  //Kode membaca speed
+    String speedStr = splitString(_data, ',', 6); // kolom ke-6 adalah kecepatan dalam knot
+  float speed_knot = speedStr.toFloat();
+  float gps_speed_mps = speed_knot * 0.514444;
+
+  float lat_float = gps.latitude.toFloat();
+  float lon_float = gps.longitude.toFloat();
+  unsigned long now = millis();
+
+  if (prev_time > 0 && (lat_float != prev_lat || lon_float != prev_lon)) {
+    float distance = calculateDistance(prev_lat, prev_lon, lat_float, lon_float); // meter
+    float deltaTime = (now - prev_time) / 1000.0; // detik
+    float manual_speed = distance / deltaTime;
+
+    if (manual_speed > 0.1 && manual_speed < 100) {
+      gps.speed = manual_speed;
+      last_valid_speed = manual_speed;
+    } else if (gps_speed_mps > 0.1 && gps_speed_mps < 100) {
+      gps.speed = gps_speed_mps;
+      last_valid_speed = gps.speed;
+    } else {
+      gps.speed = last_valid_speed;  // gunakan speed terakhir yang valid
+    }
+  } else {
+    gps.speed = last_valid_speed; // posisi tidak berubah, tetap pakai speed sebelumnya
+  }
+
+  prev_lat = lat_float;
+  prev_lon = lon_float;
+  prev_time = now;
 
   return gps;
 }

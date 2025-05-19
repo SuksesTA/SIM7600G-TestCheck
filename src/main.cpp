@@ -25,8 +25,10 @@ void loop()
 {
   gpsReading gps = getGPS();
   dhtReading dht = getDHT();
-  mpuReading mpu = getMPU(); // Pastikan `getMPU()` mengembalikan data mpu yang sesuai
-   // Menampilkan data MPU6050 // Pastikan Anda sudah mendeklarasikan fungsi getMPU yang mengembalikan nilai yang sesuai
+  mpuReading mpu = getMPU(); 
+
+  String speedStr = String(gps.speed, 2);
+  
 
   if (gps.latitude != "0.00" && gps.longitude != "0.00")
   {
@@ -45,11 +47,12 @@ void loop()
   // Tampilkan data ke layar OLED
   gpsDisplay(String(gps.latitude), String(gps.longitude));
   dhtDisplay(String(dht.temperature), String(dht.humidity));
-  mpuDisplay(String(mpu.accel.x), String(mpu.accel.y), String(mpu.accel.z)); // Menampilkan data MPU6050
+  mpuDisplay(String(mpu.accel.x), String(mpu.accel.y), String(mpu.accel.z));
+  speedDisplay(speedStr);
   delay(100);
   if (millis() - mainStartTime > 5000)
   {
-    String payload = gps.latitude + "," + gps.longitude + "," + String(dht.temperature) + "," + String(dht.humidity) + "," + String(mpu.accel.x) + "," + String(mpu.accel.y) + "," + String(mpu.accel.z); // Juga tambahkan data MPU6050 ke payload
+    String payload = gps.latitude + "," + gps.longitude + "," + String(dht.temperature) + "," + String(dht.humidity) + "," + String(mpu.accel.x) + "," + String(mpu.accel.y) + "," + String(mpu.accel.z) + "," + String(speedStr);
     publish(payload);
     mainStartTime = millis();
   }

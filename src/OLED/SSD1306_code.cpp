@@ -20,7 +20,7 @@ void oledBegin()
   display.setCursor(0, 0);
 
   // Uncomment the following line if you have a logo to display
-  // display.drawBitmap(0, 0, logo_dst, SCREEN_WIDTH, SCREEN_HEIGHT, SSD1306_WHITE);
+  display.drawBitmap(0, 0, logo_dst, SCREEN_WIDTH, SCREEN_HEIGHT, SSD1306_WHITE);
   
   display.display();
   delay(1000);
@@ -68,7 +68,7 @@ void println(String message)
 void header(String topic, bool gps)
 {
   display.drawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, BLACK);
-  String text = "DST Tracker";
+  String text = "DST | 90 %";
   int width = display.width();
   int box_height = 15;
   display.drawRect(0, 0, width, box_height, SSD1306_WHITE);
@@ -95,8 +95,9 @@ void header(String topic, bool gps)
   display.print("Longitude");
 
   // dht data
-  display.setCursor(0, 47);
+  display.setCursor(1, 49);
   display.println("Temp");
+  display.setCursor(1, 57);//56
   display.println("Humidity");
 
   display.display();
@@ -107,7 +108,7 @@ void gpsDisplay(String latitude, String longitude)
 {
   int cursorHeight = 26;
 
-  display.fillRect(0, cursorHeight, SCREEN_WIDTH, 10, BLACK);
+  display.fillRect(0, cursorHeight, SCREEN_WIDTH, 7, BLACK);
 
   display.setCursor(1, cursorHeight);
   display.print(latitude);
@@ -119,7 +120,7 @@ void gpsDisplay(String latitude, String longitude)
 void dhtDisplay(String temperature, String humidity)
 {
   int cursorWidth = SCREEN_WIDTH / 2;
-  int cursorHeight = 47;
+  int cursorHeight = 48;
 
   display.fillRect(cursorWidth, cursorHeight, SCREEN_WIDTH / 2, SCREEN_HEIGHT, BLACK);
 
@@ -136,16 +137,28 @@ void dhtDisplay(String temperature, String humidity)
 void mpuDisplay(String x, String y, String z)
 {
   // Menghapus area di mana data gyroscope ditampilkan
-  display.fillRect(0, 35, SCREEN_WIDTH, 10, BLACK); // Bersihkan area tampilan
+  display.fillRect(0, 33, SCREEN_WIDTH, 7, BLACK); // Bersihkan area tampilan
 
-  display.setCursor(1, 36); // Set posisi kursor di layar OLED
+  display.setCursor(1, 33); // Set posisi kursor di layar OLED
   display.print("Acl:"); // Tambahkan label jika diinginkan
-  display.print(x); display.print("|");
-  display.print(y); display.print("|");
+  display.print(x); display.print(" |");
+  display.print(y); display.print(" |");
   display.print(z);
   
   display.display(); // Tampilkan informasi di OLED
 }
 
+void speedDisplay(String speed)
+{
+  // Hapus area yang akan menampilkan speed (atur tinggi dan posisi sesuai kebutuhan)
+  display.fillRect(0, 40, SCREEN_WIDTH, 7, BLACK); // Bersihkan area bawah layar
+  display.setCursor(1, 40); // Sesuaikan posisi kursor
+  display.print("Speed ");
+  display.setCursor(64, 40);
+  display.print(speed);
+  display.setCursor(100, 40);
+  display.print("m/s");
 
+  display.display(); // Tampilkan di OLED
+}
 

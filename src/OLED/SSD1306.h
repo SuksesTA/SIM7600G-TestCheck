@@ -16,6 +16,8 @@ void clearScreen();
 void gpsDisplay(String latitude, String longitude);
 void dhtDisplay(String temperature, String humidity);
 void mpuDisplay(String x, String y, String z);
+void speedDisplay(String speed);
+
 
 
 const unsigned char logo_dst[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7f, 0x8f, 0xc3, 0xfc, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

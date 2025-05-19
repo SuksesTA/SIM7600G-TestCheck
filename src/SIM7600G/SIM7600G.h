@@ -15,6 +15,7 @@ typedef struct
 {
   String latitude = "0.00";
   String longitude = "0.00";
+  float speed = 0.0;
 } gpsReading;
 
 typedef struct
